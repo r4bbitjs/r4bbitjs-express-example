@@ -1,5 +1,5 @@
 import express from 'express';
-import { getServer, getClient, ServerTypes } from "r4bbit";
+import { getServer, getClient, ServerTypes } from 'r4bbit';
 
 const app = express();
 
@@ -17,10 +17,10 @@ const fibonacci = (n: number): number => {
   return fibonacci(n - 2) + fibonacci(n - 1);
 };
 
-getServer("amqp://guest:guest@localhost:5672/", {
+getServer('amqp://guest:guest@localhost:5672/', {
   connectOptions: {
-    reconnectTimeInSeconds: 1
-  }
+    reconnectTimeInSeconds: 1,
+  },
 }).then((server) => {
   server.registerRPCRoute(
     {
@@ -30,11 +30,18 @@ getServer("amqp://guest:guest@localhost:5672/", {
     },
     (reply: ServerTypes.Reply) => (msg: Record<string, unknown> | string) => {
       console.log('message received', msg);
-      reply(String(fibonacci(Number((msg as unknown as {content: {n: number}}).content.n))));
+      reply(
+        String(
+          fibonacci(
+            Number((msg as unknown as { content: { n: number } }).content.n),
+          ),
+        ),
+      );
     },
   );
 });
 
-app.listen(3001, () => {
-  console.log('Server started on port 3000');
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
